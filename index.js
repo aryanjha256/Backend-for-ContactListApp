@@ -8,7 +8,9 @@ const { MongoClient, ObjectID } = require('mongodb');
 // Create an Express app
 const app = express();
 app.use(express.json());
-app.use(cors())
+app.use(cors({
+    origin: 'http://localhost:3001'
+  }));
 
 // MongoDB connection details
 const MONGODB_URL = 'mongodb+srv://itsaryankumarhere:WyzTQiZukxXO13Nk@firstmongo.z91x1jj.mongodb.net/?retryWrites=true&w=majority';
@@ -22,7 +24,8 @@ const SALT_ROUNDS = 6;
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
-    const token = req.header('Authorization');
+    const authHeader = req.header('Authorization');
+    const token = authHeader && authHeader.split(' ')[1];
     if (!token) {
         return res.sendStatus(401);
     }
