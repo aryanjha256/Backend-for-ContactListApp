@@ -8,9 +8,7 @@ const { MongoClient, ObjectID } = require('mongodb');
 // Create an Express app
 const app = express();
 app.use(express.json());
-app.use(cors({
-    origin: 'http://localhost:3001'
-  }));
+app.use(cors());
 
 // MongoDB connection details
 const MONGODB_URL = 'mongodb+srv://itsaryankumarhere:WyzTQiZukxXO13Nk@firstmongo.z91x1jj.mongodb.net/?retryWrites=true&w=majority';
@@ -171,6 +169,6 @@ app.delete('/contacts/:id', authenticateToken, async (req, res) => {
 });
 
 // Start the server
-app.listen(3000, () => {
+app.listen(precess.env.PORT || 3000, () => {
     console.log('Server is running on http://localhost:3000');
 });

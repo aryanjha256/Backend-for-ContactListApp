@@ -1,0 +1,16 @@
+name: contacts-app
+env:
+  RAILS_ENV: production
+  SECRET_KEY: <your-secret-key>
+services:
+  mongodb:
+    image: mongo
+    port: 27017
+build:
+  env:
+    NODE_ENV: production
+  steps:
+    - run: npm install
+    - run: npm run build
+run:
+  web: npm start
