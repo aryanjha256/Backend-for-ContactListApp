@@ -51,7 +51,7 @@ app.post('/register', async (req, res) => {
         }
 
         // Connect to MongoDB
-        const client = await MongoClient.connect(MONGODB_URL);
+        client = await MongoClient.connect(MONGODB_URL);
         const db = client.db(DB_NAME);
         const usersCollection = db.collection('users');
 
@@ -73,6 +73,10 @@ app.post('/register', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.sendStatus(500);
+    } finally {
+        if (client) {
+            client.close();
+        }
     }
 });
 
@@ -82,7 +86,7 @@ app.post('/login', async (req, res) => {
         const { username, password } = req.body;
 
         // Retrieve the user details from MongoDB
-        const client = await MongoClient.connect(MONGODB_URL);
+        client = await MongoClient.connect(MONGODB_URL);
         const db = client.db(DB_NAME);
         const usersCollection = db.collection('users');
         const user = await usersCollection.findOne({ username });
@@ -104,6 +108,10 @@ app.post('/login', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.sendStatus(500);
+    } finally {
+        if (client) {
+            client.close();
+        }
     }
 });
 
@@ -113,7 +121,7 @@ app.get('/contacts', authenticateToken, async (req, res) => {
         const { username } = req.user;
 
         // Retrieve the contacts for the logged-in user from MongoDB
-        const client = await MongoClient.connect(MONGODB_URL);
+        client = await MongoClient.connect(MONGODB_URL);
         const db = client.db(DB_NAME);
         const contactsCollection = db.collection('contacts');
         const contacts = await contactsCollection.find({ username }).toArray();
@@ -122,6 +130,10 @@ app.get('/contacts', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error(error);
         res.sendStatus(500);
+    } finally {
+        if (client) {
+            client.close();
+        }
     }
 });
 
@@ -132,7 +144,7 @@ app.post('/contacts', authenticateToken, async (req, res) => {
         const { name, email, phone } = req.body;
 
         // Store the new contact in MongoDB
-        const client = await MongoClient.connect(MONGODB_URL);
+        client = await MongoClient.connect(MONGODB_URL);
         const db = client.db(DB_NAME);
         const contactsCollection = db.collection('contacts');
         await contactsCollection.insertOne({ username, name, email, phone });
@@ -141,6 +153,10 @@ app.post('/contacts', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error(error);
         res.sendStatus(500);
+    } finally {
+        if (client) {
+            client.close();
+        }
     }
 });
 
@@ -152,7 +168,7 @@ app.put('/contacts/:id', authenticateToken, async (req, res) => {
         const { name, email, phone } = req.body;
 
         // Update the contact in MongoDB
-        const client = await MongoClient.connect(MONGODB_URL);
+        client = await MongoClient.connect(MONGODB_URL);
         const db = client.db(DB_NAME);
         const contactsCollection = db.collection('contacts');
         await contactsCollection.updateOne({ _id: ObjectID(id), username }, { $set: { name, email, phone } });
@@ -161,6 +177,10 @@ app.put('/contacts/:id', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error(error);
         res.sendStatus(500);
+    } finally {
+        if (client) {
+            client.close();
+        }
     }
 });
 
@@ -171,7 +191,7 @@ app.delete('/contacts/:id', authenticateToken, async (req, res) => {
         const { id } = req.params;
 
         // Delete the contact from MongoDB
-        const client = await MongoClient.connect(MONGODB_URL);
+        client = await MongoClient.connect(MONGODB_URL);
         const db = client.db(DB_NAME);
         const contactsCollection = db.collection('contacts');
         await contactsCollection.deleteOne({ _id: ObjectID(id), username });
@@ -180,6 +200,10 @@ app.delete('/contacts/:id', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error(error);
         res.sendStatus(500);
+    } finally {
+        if (client) {
+            client.close();
+        }
     }
 });
 
