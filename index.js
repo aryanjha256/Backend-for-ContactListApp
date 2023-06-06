@@ -45,13 +45,28 @@ app.post('/register', async (req, res) => {
     try {
         const { username, password } = req.body;
 
+        if (!username || !password) {
+            res.status(400).json({ error: 'Please enter a valid username and password.' });
+            return;
+        }
+
+        // Connect to MongoDB
+        const client = await MongoClient.connect(MONGODB_URL);
+        const db = client.db(DB_NAME);
+        const usersCollection = db.collection('users');
+
+        // Check if the username already exists in MongoDB
+
+        const existingUser = await usersCollection.findOne({ username });
+        if (existingUser) {
+            res.status(400).json({ error: 'Username already taken.' });
+            return;
+        }
+
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
         // Store the user details in MongoDB
-        const client = await MongoClient.connect(MONGODB_URL);
-        const db = client.db(DB_NAME);
-        const usersCollection = db.collection('users');
         await usersCollection.insertOne({ username, password: hashedPassword });
 
         res.sendStatus(201);
